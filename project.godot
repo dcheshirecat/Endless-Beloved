@@ -40,6 +40,14 @@ tap={
 "events": []
 }
 
+[autoload]
+
+GameState="*res://scripts/core/GameState.gd"
+SceneManager="*res://scripts/core/SceneManager.gd"
+AudioManager="*res://scripts/core/AudioManager.gd"
+CardManager="*res://scripts/core/CardManager.gd"
+DialogueSystem="*res://scripts/core/DialogueSystem.gd"
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=2
