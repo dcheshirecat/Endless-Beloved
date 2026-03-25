@@ -55,35 +55,49 @@ jobs:
             -keypass android \
             -dname "CN=Android Debug,O=Android,C=US"
 
-      # FIX 1: Use $ANDROID_SDK_ROOT env var (set by android-actions/setup-android)
-      # FIX 2: Use the exact .tres header format Godot 4 expects
       - name: Configure Godot editor settings
         run: |
           mkdir -p ~/.config/godot
           JAVA_PATH=$(dirname $(dirname $(readlink -f $(which java))))
+          # No indentation inside heredoc - indentation breaks the .tres format
           cat > ~/.config/godot/editor_settings-4.tres << EOF
-          [gd_resource type="EditorSettings" format=3 uid="uid://editor"]
+[gd_resource type="EditorSettings" format=3 uid="uid://editor"]
 
-          [resource]
-          export/android/android_sdk_path = "$ANDROID_SDK_ROOT"
-          export/android/debug_keystore = "/tmp/debug.keystore"
-          export/android/debug_keystore_user = "androiddebugkey"
-          export/android/debug_keystore_pass = "android"
-          export/android/java_sdk_path = "$JAVA_PATH"
-          EOF
+[resource]
+export/android/android_sdk_path = "$ANDROID_SDK_ROOT"
+export/android/debug_keystore = "/tmp/debug.keystore"
+export/android/debug_keystore_user = "androiddebugkey"
+export/android/debug_keystore_pass = "android"
+export/android/java_sdk_path = "$JAVA_PATH"
+EOF
 
       - name: Verify Android configuration
         run: |
-          echo "=== SDK path ==="
-          ls $ANDROID_SDK_ROOT || echo "SDK NOT FOUND"
-          echo "=== Build tools ==="
-          ls $ANDROID_SDK_ROOT/build-tools/ || echo "No build tools found"
+          echo "=== ANDROID_SDK_ROOT ==="
+          echo "$ANDROID_SDK_ROOT"
+          echo "=== SDK build-tools ==="
+          ls $ANDROID_SDK_ROOT/build-tools/ || echo "MISSING"
+          echo "=== SDK platforms ==="
+          ls $ANDROID_SDK_ROOT/platforms/ || echo "MISSING"
+          echo "=== aapt2 binary ==="
+          find $ANDROID_SDK_ROOT/build-tools -name "aapt2" 2>/dev/null || echo "aapt2 NOT FOUND"
           echo "=== Debug keystore ==="
-          ls -la /tmp/debug.keystore || echo "Keystore NOT FOUND"
-          echo "=== Editor settings ==="
+          ls -la /tmp/debug.keystore || echo "MISSING"
+          echo "=== Editor settings (raw) ==="
           cat ~/.config/godot/editor_settings-4.tres
           echo "=== Export presets ==="
           cat export_presets.cfg
+          echo "=== Export templates ==="
+          ls ~/.local/share/godot/export_templates/4.2.2.stable/ | grep android || echo "NO ANDROID TEMPLATES"
+
+      # Run Godot once headless so it initializes and logs what's wrong
+      - name: Dry-run Godot to surface config errors
+        run: |
+          timeout 30 godot --headless --quit 2>&1 | tee /tmp/godot_init.log || true
+          echo "=== Godot init log ==="
+          cat /tmp/godot_init.log
+          echo "=== Godot editor logs ==="
+          find ~/.local/share/godot/logs -name "*.log" -exec cat {} \; 2>/dev/null || echo "No logs found"
 
       - name: Build APK
         run: |
