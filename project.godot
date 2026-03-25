@@ -9,13 +9,12 @@ config_version=5
 config/name="Endless, Beloved"
 config/description="A dark fantasy tarot visual novel"
 config/version="0.1.0"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.2", "Mobile")
-config/icon="res://assets/images/ui/icon.png"
 
 [audio]
 
-buses/default_bus_layout="res://assets/audio/default_bus_layout.tres"
+buses/default_bus_layout="res://default_bus_layout.tres"
 
 [display]
 
@@ -25,28 +24,13 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation="portrait"
 
-[input]
-
-swipe_left={
-"deadzone": 0.2,
-"events": []
-}
-swipe_right={
-"deadzone": 0.2,
-"events": []
-}
-tap={
-"deadzone": 0.2,
-"events": []
-}
-
 [autoload]
 
-GameState="*res://scripts/core/GameState.gd"
-SceneManager="*res://scripts/core/SceneManager.gd"
-AudioManager="*res://scripts/core/AudioManager.gd"
-CardManager="*res://scripts/core/CardManager.gd"
-DialogueSystem="*res://scripts/core/DialogueSystem.gd"
+GameState="*res://GameState.gd"
+SceneManager="*res://SceneManager.gd"
+AudioManager="*res://AudioManager.gd"
+CardManager="*res://CardManager.gd"
+DialogueSystem="*res://DialogueSystem.gd"
 
 [rendering]
 

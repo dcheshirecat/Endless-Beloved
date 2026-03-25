@@ -73,7 +73,7 @@ func _make_card(card_id: String, index: int) -> Control:
 	front_texture.set_anchors_preset(Control.PRESET_FULL_RECT)
 	front_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	front_texture.visible = false
-	var card_path = "res://assets/images/cards/%s.png" % card_id
+	var card_path = "res://images/cards/%s.png" % card_id
 	if ResourceLoader.exists(card_path):
 		front_texture.texture = load(card_path)
 
@@ -81,7 +81,7 @@ func _make_card(card_id: String, index: int) -> Control:
 	back_texture.name = "BackTexture"
 	back_texture.set_anchors_preset(Control.PRESET_FULL_RECT)
 	back_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	var back_path = "res://assets/images/cards/back.png"
+	var back_path = "res://images/cards/back.png"
 	if ResourceLoader.exists(back_path):
 		back_texture.texture = load(back_path)
 

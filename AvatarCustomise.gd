@@ -63,11 +63,11 @@ func _ready() -> void:
 
 func _build_options() -> void:
 	_build_color_grid(skin_grid, SKIN_TONES, "skin_tone")
-	_build_number_grid(hair_style_grid, HAIR_STYLES, "hair_style", "res://assets/images/ui/hair_")
+	_build_number_grid(hair_style_grid, HAIR_STYLES, "hair_style", "res://images/ui/hair_")
 	_build_color_grid(hair_color_grid, HAIR_COLORS, "hair_color")
 	_build_color_grid(eye_color_grid, EYE_COLORS, "eye_color")
-	_build_number_grid(outfit_grid, OUTFITS, "outfit", "res://assets/images/ui/outfit_")
-	_build_number_grid(accessory_grid, ACCESSORIES, "accessory", "res://assets/images/ui/accessory_")
+	_build_number_grid(outfit_grid, OUTFITS, "outfit", "res://images/ui/outfit_")
+	_build_number_grid(accessory_grid, ACCESSORIES, "accessory", "res://images/ui/accessory_")
 
 func _build_color_grid(grid: GridContainer, colors: Array, key: String) -> void:
 	for child in grid.get_children():
@@ -121,11 +121,11 @@ func _on_confirm_button_pressed() -> void:
 	GameState.player_avatar = _current_avatar.duplicate()
 	AudioManager.play_sfx("affinity_up")
 	if _is_first_setup:
-		SceneManager.go_to("res://scenes/ui/pronoun_select.tscn")
+		SceneManager.go_to("pronoun_select.tscn")
 	else:
-		SceneManager.go_to("res://scenes/home_screen.tscn")
+		SceneManager.go_to("home_screen.tscn")
 
 func _on_back_button_pressed() -> void:
 	AudioManager.play_sfx("menu_back")
 	if not _is_first_setup:
-		SceneManager.go_to("res://scenes/home_screen.tscn")
+		SceneManager.go_to("home_screen.tscn")

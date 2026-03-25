@@ -2,7 +2,7 @@
 # Autoload singleton — parses and delivers story dialogue from JSON
 extends Node
 
-const STORY_DIR: String = "res://data/story/"
+const STORY_DIR: String = "res://story/"
 const TYPEWRITER_SPEED: float = 0.03  # seconds per character
 const FAST_TYPEWRITER_SPEED: float = 0.005
 

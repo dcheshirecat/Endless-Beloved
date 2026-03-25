@@ -14,27 +14,27 @@ const SFX_POOL_SIZE: int = 8
 
 # SFX paths
 const SFX = {
-	"card_draw":    "res://assets/audio/sfx/card_draw.ogg",
-	"card_flip":    "res://assets/audio/sfx/card_flip.ogg",
-	"card_shuffle": "res://assets/audio/sfx/card_shuffle.ogg",
-	"dialogue_blip":"res://assets/audio/sfx/dialogue_blip.ogg",
-	"page_turn":    "res://assets/audio/sfx/page_turn.ogg",
-	"affinity_up":  "res://assets/audio/sfx/affinity_up.ogg",
-	"menu_select":  "res://assets/audio/sfx/menu_select.ogg",
-	"menu_back":    "res://assets/audio/sfx/menu_back.ogg",
-	"candle":       "res://assets/audio/sfx/candle.ogg",
+	"card_draw":    "res://audio/sfx/card_draw.ogg",
+	"card_flip":    "res://audio/sfx/card_flip.ogg",
+	"card_shuffle": "res://audio/sfx/card_shuffle.ogg",
+	"dialogue_blip":"res://audio/sfx/dialogue_blip.ogg",
+	"page_turn":    "res://audio/sfx/page_turn.ogg",
+	"affinity_up":  "res://audio/sfx/affinity_up.ogg",
+	"menu_select":  "res://audio/sfx/menu_select.ogg",
+	"menu_back":    "res://audio/sfx/menu_back.ogg",
+	"candle":       "res://audio/sfx/candle.ogg",
 }
 
 # Music paths
 const MUSIC = {
-	"title":        "res://assets/audio/music/title_theme.ogg",
-	"liminal":      "res://assets/audio/music/liminal_ambient.ogg",
-	"angel_theme":  "res://assets/audio/music/angel_theme.ogg",
-	"oracle_theme": "res://assets/audio/music/oracle_theme.ogg",
-	"apprentice_theme": "res://assets/audio/music/apprentice_theme.ogg",
-	"reading":      "res://assets/audio/music/reading_ambient.ogg",
-	"tension":      "res://assets/audio/music/tension.ogg",
-	"ending":       "res://assets/audio/music/ending.ogg",
+	"title":        "res://audio/music/title_theme.ogg",
+	"liminal":      "res://audio/music/liminal_ambient.ogg",
+	"angel_theme":  "res://audio/music/angel_theme.ogg",
+	"oracle_theme": "res://audio/music/oracle_theme.ogg",
+	"apprentice_theme": "res://audio/music/apprentice_theme.ogg",
+	"reading":      "res://audio/music/reading_ambient.ogg",
+	"tension":      "res://audio/music/tension.ogg",
+	"ending":       "res://audio/music/ending.ogg",
 }
 
 func _ready() -> void:

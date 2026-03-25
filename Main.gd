@@ -12,6 +12,6 @@ func _ready() -> void:
 			break
 
 	if has_save:
-		SceneManager.go_to("res://scenes/ui/load_screen.tscn")
+		SceneManager.go_to("load_screen.tscn")
 	else:
-		SceneManager.go_to("res://scenes/ui/title_screen.tscn")
+		SceneManager.go_to("title_screen.tscn")

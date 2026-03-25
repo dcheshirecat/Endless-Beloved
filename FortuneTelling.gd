@@ -111,7 +111,7 @@ func _make_card_display(card: Dictionary, position: int) -> Control:
 	var tex = TextureRect.new()
 	tex.set_anchors_preset(Control.PRESET_FULL_RECT)
 	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	var path = "res://assets/images/cards/%s.png" % card.get("id", "back")
+	var path = "res://images/cards/%s.png" % card.get("id", "back")
 	if ResourceLoader.exists(path):
 		tex.texture = load(path)
 	var name_label = Label.new()

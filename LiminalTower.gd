@@ -17,42 +17,42 @@ extends Control
 const ROOMS: Dictionary = {
 	"entrance": {
 		"name": "The Entrance Hall",
-		"bg": "res://assets/images/backgrounds/tower_entrance.png",
+		"bg": "res://images/backgrounds/tower_entrance.png",
 		"music": "liminal",
 		"connections": ["library", "garden"],
 		"characters": []
 	},
 	"library": {
 		"name": "The Oracle's Library",
-		"bg": "res://assets/images/backgrounds/tower_library.png",
+		"bg": "res://images/backgrounds/tower_library.png",
 		"music": "oracle_theme",
 		"connections": ["entrance", "observatory"],
 		"characters": ["oracle"]
 	},
 	"garden": {
 		"name": "The Hanging Garden",
-		"bg": "res://assets/images/backgrounds/tower_garden.png",
+		"bg": "res://images/backgrounds/tower_garden.png",
 		"music": "apprentice_theme",
 		"connections": ["entrance", "crypt"],
 		"characters": ["apprentice"]
 	},
 	"observatory": {
 		"name": "The Observatory",
-		"bg": "res://assets/images/backgrounds/tower_observatory.png",
+		"bg": "res://images/backgrounds/tower_observatory.png",
 		"music": "liminal",
 		"connections": ["library", "threshold"],
 		"characters": []
 	},
 	"crypt": {
 		"name": "The Crypt",
-		"bg": "res://assets/images/backgrounds/tower_crypt.png",
+		"bg": "res://images/backgrounds/tower_crypt.png",
 		"music": "tension",
 		"connections": ["garden"],
 		"characters": ["angel"]
 	},
 	"threshold": {
 		"name": "The Threshold",
-		"bg": "res://assets/images/backgrounds/tower_threshold.png",
+		"bg": "res://images/backgrounds/tower_threshold.png",
 		"music": "ending",
 		"connections": ["observatory"],
 		"characters": ["angel", "oracle", "apprentice"]
@@ -137,7 +137,7 @@ func _update_characters(character_ids: Array) -> void:
 	for char_id in character_ids:
 		var tier = GameState.get_affinity_tier(char_id)
 		var variant = GameState.character_variants.get(char_id, "nonbinary")
-		var portrait_path = "res://assets/images/characters/%s_%s_%s.png" % [char_id, variant, _get_default_expression(char_id, tier)]
+		var portrait_path = "res://images/characters/%s_%s_%s.png" % [char_id, variant, _get_default_expression(char_id, tier)]
 		var char_sprite = TextureRect.new()
 		char_sprite.custom_minimum_size = Vector2(300, 600)
 		char_sprite.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -190,13 +190,13 @@ func _on_dialogue_ended(next_scene: String) -> void:
 	GameState.current_scene_id = ""
 	GameState.save_game()
 	if next_scene != "" and next_scene != "liminal_tower":
-		SceneManager.go_to("res://scenes/%s.tscn" % next_scene)
+		SceneManager.go_to("%s.tscn" % next_scene)
 
 func _on_flag_trigger(flag_name: String, value: Variant) -> void:
 	if flag_name == "__card_draw_requested__":
 		var data = value as Dictionary
 		GameState.save_game()
-		SceneManager.go_to("res://scenes/ui/card_draw.tscn", data)
+		SceneManager.go_to("card_draw.tscn", data)
 
 func _on_affinity_changed(character_id: String, new_value: int) -> void:
 	# Brief flash indicating affinity change
@@ -213,4 +213,4 @@ func _on_menu_button_pressed() -> void:
 
 func _on_home_button_pressed() -> void:
 	GameState.save_game()
-	SceneManager.go_to("res://scenes/home_screen.tscn")
+	SceneManager.go_to("home_screen.tscn")

@@ -181,7 +181,7 @@ func _animate_card_flip() -> void:
 	_begin_reveal()
 
 func _load_card_texture() -> void:
-	var card_path = "res://assets/images/cards/" + _current_card.get("id", "back") + ".png"
+	var card_path = "res://images/cards/" + _current_card.get("id", "back") + ".png"
 	if ResourceLoader.exists(card_path):
 		card_front.texture = load(card_path)
 	else:
@@ -248,7 +248,7 @@ func _confirm_draw() -> void:
 	# Return to dialogue
 	if _next_node != "":
 		DialogueSystem.start_node(_next_node)
-	SceneManager.go_to("res://scenes/locations/liminal_tower.tscn")
+	SceneManager.go_to("liminal_tower.tscn")
 
 func _on_confirm_button_pressed() -> void:
 	_confirm_draw()

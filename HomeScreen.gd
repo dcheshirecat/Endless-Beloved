@@ -85,17 +85,17 @@ func _process(delta: float) -> void:
 func _on_continue_button_pressed() -> void:
 	AudioManager.play_sfx("menu_select")
 	if GameState.current_chapter == 0:
-		SceneManager.go_to("res://scenes/ui/character_setup.tscn")
+		SceneManager.go_to("character_setup.tscn")
 	else:
-		SceneManager.go_to("res://scenes/locations/liminal_tower.tscn")
+		SceneManager.go_to("liminal_tower.tscn")
 
 func _on_deck_button_pressed() -> void:
 	AudioManager.play_sfx("card_shuffle")
-	SceneManager.go_to("res://scenes/ui/card_archive.tscn")
+	SceneManager.go_to("card_archive.tscn")
 
 func _on_journal_button_pressed() -> void:
 	AudioManager.play_sfx("page_turn")
-	SceneManager.go_to("res://scenes/ui/journal.tscn")
+	SceneManager.go_to("journal.tscn")
 
 func _on_settings_button_pressed() -> void:
 	AudioManager.play_sfx("menu_select")
@@ -103,4 +103,4 @@ func _on_settings_button_pressed() -> void:
 
 func _on_avatar_button_pressed() -> void:
 	AudioManager.play_sfx("menu_select")
-	SceneManager.go_to("res://scenes/ui/avatar_customise.tscn")
+	SceneManager.go_to("avatar_customise.tscn")

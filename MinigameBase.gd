@@ -10,7 +10,7 @@ var minigame_title: String = "Untitled"
 var is_complete: bool = false
 var score: int = 0
 var max_score: int = 100
-var _return_scene: String = "res://scenes/home_screen.tscn"
+var _return_scene: String = "home_screen.tscn"
 
 # Optional affinity reward on completion
 var affinity_rewards: Dictionary = {}  # { "character_id": delta }
@@ -46,7 +46,7 @@ func _on_complete(final_score: int) -> void:
 
 func _show_completion_screen() -> void:
 	# Show result overlay — subclasses can override for custom screen
-	var overlay = preload("res://scenes/ui/minigame_result.tscn").instantiate()
+	var overlay = preload("minigame_result.tscn").instantiate()
 	overlay.setup(minigame_title, score, max_score)
 	overlay.continue_pressed.connect(_on_result_continue)
 	add_child(overlay)

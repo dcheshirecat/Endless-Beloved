@@ -87,7 +87,7 @@ func _update_portrait(speaker: String, expression: String) -> void:
 		portrait.get_parent().visible = false
 		return
 	portrait.get_parent().visible = true
-	var portrait_path = "res://assets/images/characters/%s_%s_%s.png" % [
+	var portrait_path = "res://images/characters/%s_%s_%s.png" % [
 		speaker,
 		GameState.character_variants.get(speaker, "nonbinary"),
 		expression

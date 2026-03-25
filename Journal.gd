@@ -133,7 +133,7 @@ func _make_card_entry(card: Dictionary, unlocked: bool) -> Control:
 	card_img.custom_minimum_size = Vector2(60, 90)
 	card_img.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	if unlocked:
-		var path = "res://assets/images/cards/%s.png" % card.id
+		var path = "res://images/cards/%s.png" % card.id
 		if ResourceLoader.exists(path):
 			card_img.texture = load(path)
 	else:
@@ -219,4 +219,4 @@ func _get_ending_title(ending_id: String) -> String:
 
 func _on_back_button_pressed() -> void:
 	AudioManager.play_sfx("menu_back")
-	SceneManager.go_to("res://scenes/home_screen.tscn")
+	SceneManager.go_to("home_screen.tscn")

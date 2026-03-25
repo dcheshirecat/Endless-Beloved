@@ -100,4 +100,4 @@ func _on_confirm_button_pressed() -> void:
 	GameState.current_chapter = 1
 	GameState.current_scene_id = "prologue_01"
 	DialogueSystem.load_chapter("chapter_01")
-	SceneManager.go_to("res://scenes/locations/liminal_tower.tscn")
+	SceneManager.go_to("liminal_tower.tscn")

@@ -125,7 +125,7 @@ func _make_draggable_card(card: Dictionary) -> Control:
 	var tex = TextureRect.new()
 	tex.set_anchors_preset(Control.PRESET_FULL_RECT)
 	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	var path = "res://assets/images/cards/%s.png" % card.get("id", "back")
+	var path = "res://images/cards/%s.png" % card.get("id", "back")
 	if ResourceLoader.exists(path):
 		tex.texture = load(path)
 	container.add_child(tex)

@@ -39,11 +39,11 @@ func _on_new_game_button_pressed() -> void:
 	AudioManager.play_sfx("menu_select")
 	# Randomise character variants for this playthrough
 	GameState.randomise_character_variants()
-	SceneManager.go_to("res://scenes/ui/avatar_customise.tscn")
+	SceneManager.go_to("avatar_customise.tscn")
 
 func _on_load_game_button_pressed() -> void:
 	AudioManager.play_sfx("menu_select")
-	SceneManager.go_to("res://scenes/ui/load_screen.tscn")
+	SceneManager.go_to("load_screen.tscn")
 
 func _on_settings_button_pressed() -> void:
 	AudioManager.play_sfx("menu_select")
