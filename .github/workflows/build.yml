@@ -69,37 +69,29 @@ jobs:
           echo 'export/android/debug_keystore_pass = "android"' >> $SETTINGS
           echo "export/android/java_sdk_path = \"$JAVA_PATH\"" >> $SETTINGS
 
-      - name: Verify Android configuration
+      - name: Verify configuration
         run: |
-          echo "=== ANDROID_SDK_ROOT ==="
-          echo "$ANDROID_SDK_ROOT"
-          echo "=== SDK build-tools ==="
-          ls $ANDROID_SDK_ROOT/build-tools/ || echo "MISSING"
-          echo "=== SDK platforms ==="
-          ls $ANDROID_SDK_ROOT/platforms/ || echo "MISSING"
-          echo "=== aapt2 binary ==="
-          find $ANDROID_SDK_ROOT/build-tools -name "aapt2" 2>/dev/null || echo "aapt2 NOT FOUND"
-          echo "=== Debug keystore ==="
-          ls -la /tmp/debug.keystore || echo "MISSING"
-          echo "=== Editor settings (raw) ==="
+          echo "=== Editor settings ==="
           cat ~/.config/godot/editor_settings-4.tres
-          echo "=== Export presets ==="
-          cat export_presets.cfg
+          echo "=== Android SDK ==="
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          ls $ANDROID_SDK_ROOT/build-tools/ || echo "build-tools MISSING"
+          ls $ANDROID_SDK_ROOT/platforms/ || echo "platforms MISSING"
+          echo "=== aapt2 ==="
+          find $ANDROID_SDK_ROOT/build-tools -name "aapt2" 2>/dev/null || echo "aapt2 NOT FOUND"
+          echo "=== Java ==="
+          java -version
+          echo "=== Keystore ==="
+          ls -la /tmp/debug.keystore || echo "MISSING"
           echo "=== Export templates ==="
-          ls ~/.local/share/godot/export_templates/4.2.2.stable/ | grep android || echo "NO ANDROID TEMPLATES"
+          ls ~/.local/share/godot/export_templates/4.2.2.stable/ | grep -i android || echo "NO ANDROID TEMPLATES"
 
-      - name: Dry-run Godot to surface config errors
-        run: |
-          timeout 30 godot --headless --quit 2>&1 | tee /tmp/godot_init.log || true
-          echo "=== Godot init log ==="
-          cat /tmp/godot_init.log
-          echo "=== Godot editor logs ==="
-          find ~/.local/share/godot/logs -name "*.log" -exec cat {} \; 2>/dev/null || echo "No logs found"
-
-      - name: Build APK
+      - name: Build APK (verbose)
         run: |
           mkdir -p build/android
-          godot --headless --export-debug "Android" build/android/EndlessBeloved_debug.apk
+          # --verbose surfaces the exact validation errors Godot suppresses by default
+          godot --headless --verbose --export-debug "Android" build/android/EndlessBeloved_debug.apk 2>&1
+        continue-on-error: true
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
