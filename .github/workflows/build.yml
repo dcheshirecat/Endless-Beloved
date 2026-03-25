@@ -2,51 +2,29 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: [main]
 
 jobs:
-  build-android:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          lfs: true
+      - uses: actions/checkout@v4
 
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
           java-version: '17'
+          distribution: 'temurin'
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Install Android build tools
-        run: |
-          sdkmanager "build-tools;34.0.0" "platforms;android-34" "platform-tools"
-
-      - name: Download Godot 4.2.2
-        run: |
-          wget -q https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_linux.x86_64.zip
-          unzip -q Godot_v4.2.2-stable_linux.x86_64.zip
-          chmod +x Godot_v4.2.2-stable_linux.x86_64
-          sudo mv Godot_v4.2.2-stable_linux.x86_64 /usr/local/bin/godot
-
-      - name: Download Godot Android export templates
-        run: |
-          mkdir -p ~/.local/share/godot/export_templates/4.2.2.stable
-          wget -q https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_export_templates.tpz
-          unzip -q Godot_v4.2.2-stable_export_templates.tpz
-          mv templates/* ~/.local/share/godot/export_templates/4.2.2.stable/
+        run: sdkmanager "build-tools;34.0.0" "platform-tools" "platforms;android-34"
 
       - name: Generate debug keystore
         run: |
-          keytool -genkey -v \
+          keytool -genkeypair -v \
             -keystore /tmp/debug.keystore \
             -alias androiddebugkey \
             -keyalg RSA -keysize 2048 \
@@ -55,58 +33,39 @@ jobs:
             -keypass android \
             -dname "CN=Android Debug,O=Android,C=US"
 
+      - name: Download Godot
+        run: |
+          wget -q https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_linux.x86_64.zip
+          unzip -q Godot_v4.2.2-stable_linux.x86_64.zip
+          mv Godot_v4.2.2-stable_linux.x86_64 godot
+          chmod +x godot
+
+      - name: Download Android export templates
+        run: |
+          mkdir -p ~/.local/share/godot/export_templates/4.2.2.stable
+          wget -q https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_export_templates.tpz
+          unzip -q Godot_v4.2.2-stable_export_templates.tpz
+          mv templates/* ~/.local/share/godot/export_templates/4.2.2.stable/
+
       - name: Configure Godot editor settings
         run: |
           mkdir -p ~/.config/godot
-          JAVA_PATH=$(dirname $(dirname $(readlink -f $(which java))))
-          SETTINGS=~/.config/godot/editor_settings-4.tres
-          echo '[gd_resource type="EditorSettings" format=3 uid="uid://editor"]' > $SETTINGS
-          echo '' >> $SETTINGS
-          echo '[resource]' >> $SETTINGS
-          echo "export/android/android_sdk_path = \"$ANDROID_SDK_ROOT\"" >> $SETTINGS
-          echo 'export/android/debug_keystore = "/tmp/debug.keystore"' >> $SETTINGS
-          echo 'export/android/debug_keystore_user = "androiddebugkey"' >> $SETTINGS
-          echo 'export/android/debug_keystore_pass = "android"' >> $SETTINGS
-          echo "export/android/java_sdk_path = \"$JAVA_PATH\"" >> $SETTINGS
-
-      - name: Verify configuration
-        run: |
-          echo "=== Editor settings ==="
-          cat ~/.config/godot/editor_settings-4.tres
-          echo "=== Android SDK ==="
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
-          ls $ANDROID_SDK_ROOT/build-tools/ || echo "build-tools MISSING"
-          ls $ANDROID_SDK_ROOT/platforms/ || echo "platforms MISSING"
-          echo "=== aapt2 ==="
-          find $ANDROID_SDK_ROOT/build-tools -name "aapt2" 2>/dev/null || echo "aapt2 NOT FOUND"
-          echo "=== Java ==="
-          java -version
-          echo "=== Keystore ==="
-          ls -la /tmp/debug.keystore || echo "MISSING"
-          echo "=== Export templates ==="
-          ls ~/.local/share/godot/export_templates/4.2.2.stable/ | grep -i android || echo "NO ANDROID TEMPLATES"
-
-      - name: Start ADB server
-        run: |
-          adb start-server
-          adb devices
+          cat > ~/.config/godot/editor_settings-4.tres << EOF
+          [gd_resource type="EditorSettings" format=3]
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_SDK_ROOT"
+          export/android/debug_keystore = "/tmp/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_pass = "android"
+          EOF
 
       - name: Build APK
         run: |
           mkdir -p build/android
-          godot --headless --export-debug "Android" build/android/EndlessBeloved_debug.apk
+          ./godot --headless --export-debug "Android" build/android/EndlessBeloved_debug.apk
 
-      - name: Upload APK artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: EndlessBeloved-APK
-          path: build/android/*.apk
-          retention-days: 30
-
-      - name: Upload build logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-logs
-          path: ~/.local/share/godot/logs/
-          retention-days: 7
+          name: android-apk
+          path: build/android/EndlessBeloved_debug.apk
