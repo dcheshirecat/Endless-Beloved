@@ -62,11 +62,24 @@ jobs:
 [gd_resource type="EditorSettings" format=3]
 
 [resource]
-export/android/android_sdk_path = "/root/.android/sdk"
+export/android/android_sdk_path = "/usr/local/lib/android/sdk"
 export/android/debug_keystore = "/tmp/debug.keystore"
 export/android/debug_keystore_user = "androiddebugkey"
 export/android/debug_keystore_pass = "android"
 EOF
+
+      - name: Verify Android configuration
+        run: |
+          echo "=== SDK path ==="
+          ls /usr/local/lib/android/sdk || echo "SDK NOT FOUND at this path"
+          echo "=== Build tools ==="
+          ls /usr/local/lib/android/sdk/build-tools/ || echo "No build tools found"
+          echo "=== Debug keystore ==="
+          ls -la /tmp/debug.keystore || echo "Keystore NOT FOUND"
+          echo "=== Editor settings ==="
+          cat ~/.config/godot/editor_settings-4.tres
+          echo "=== Export presets ==="
+          cat export_presets.cfg
 
       - name: Build APK
         run: |
@@ -76,5 +89,14 @@ EOF
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: EndlessBeloved-debug
-          path: build/android/EndlessBeloved_debug.apk
+          name: EndlessBeloved-APK
+          path: build/android/*.apk
+          retention-days: 30
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: ~/.local/share/godot/logs/
+          retention-days: 7
