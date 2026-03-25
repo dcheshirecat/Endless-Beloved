@@ -55,24 +55,29 @@ jobs:
             -keypass android \
             -dname "CN=Android Debug,O=Android,C=US"
 
+      # FIX 1: Use $ANDROID_SDK_ROOT env var (set by android-actions/setup-android)
+      # FIX 2: Use the exact .tres header format Godot 4 expects
       - name: Configure Godot editor settings
         run: |
           mkdir -p ~/.config/godot
-          SETTINGS_FILE=~/.config/godot/editor_settings-4.tres
           JAVA_PATH=$(dirname $(dirname $(readlink -f $(which java))))
-          printf '[gd_resource type="EditorSettings" format=3]\n\n[resource]\n' > $SETTINGS_FILE
-          echo 'export/android/android_sdk_path = "/usr/local/lib/android/sdk"' >> $SETTINGS_FILE
-          echo 'export/android/debug_keystore = "/tmp/debug.keystore"' >> $SETTINGS_FILE
-          echo 'export/android/debug_keystore_user = "androiddebugkey"' >> $SETTINGS_FILE
-          echo 'export/android/debug_keystore_pass = "android"' >> $SETTINGS_FILE
-          echo "export/android/java_sdk_path = \"$JAVA_PATH\"" >> $SETTINGS_FILE
+          cat > ~/.config/godot/editor_settings-4.tres << EOF
+          [gd_resource type="EditorSettings" format=3 uid="uid://editor"]
+
+          [resource]
+          export/android/android_sdk_path = "$ANDROID_SDK_ROOT"
+          export/android/debug_keystore = "/tmp/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_pass = "android"
+          export/android/java_sdk_path = "$JAVA_PATH"
+          EOF
 
       - name: Verify Android configuration
         run: |
           echo "=== SDK path ==="
-          ls /usr/local/lib/android/sdk || echo "SDK NOT FOUND at this path"
+          ls $ANDROID_SDK_ROOT || echo "SDK NOT FOUND"
           echo "=== Build tools ==="
-          ls /usr/local/lib/android/sdk/build-tools/ || echo "No build tools found"
+          ls $ANDROID_SDK_ROOT/build-tools/ || echo "No build tools found"
           echo "=== Debug keystore ==="
           ls -la /tmp/debug.keystore || echo "Keystore NOT FOUND"
           echo "=== Editor settings ==="
