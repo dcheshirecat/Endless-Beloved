@@ -86,12 +86,15 @@ jobs:
           echo "=== Export templates ==="
           ls ~/.local/share/godot/export_templates/4.2.2.stable/ | grep -i android || echo "NO ANDROID TEMPLATES"
 
-      - name: Build APK (verbose)
+      - name: Start ADB server
+        run: |
+          adb start-server
+          adb devices
+
+      - name: Build APK
         run: |
           mkdir -p build/android
-          # --verbose surfaces the exact validation errors Godot suppresses by default
-          godot --headless --verbose --export-debug "Android" build/android/EndlessBeloved_debug.apk 2>&1
-        continue-on-error: true
+          godot --headless --export-debug "Android" build/android/EndlessBeloved_debug.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
