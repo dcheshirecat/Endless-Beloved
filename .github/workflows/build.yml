@@ -10,18 +10,41 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # ── 1. JAVA ────────────────────────────────────────────────────────────
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Verify Java
+        run: |
+          echo "=== Java version ==="
+          java -version
+          echo "=== keytool location ==="
+          which keytool
+
+      # ── 2. ANDROID SDK ─────────────────────────────────────────────────────
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Install Android build tools
         run: sdkmanager "build-tools;34.0.0" "platform-tools" "platforms;android-34"
 
+      - name: Verify Android SDK
+        run: |
+          echo "=== ANDROID_SDK_ROOT ==="
+          echo $ANDROID_SDK_ROOT
+          echo "=== SDK contents ==="
+          ls $ANDROID_SDK_ROOT
+          echo "=== build-tools ==="
+          ls $ANDROID_SDK_ROOT/build-tools/
+          echo "=== aapt2 present? ==="
+          find $ANDROID_SDK_ROOT -name "aapt2" 2>/dev/null
+          echo "=== adb present? ==="
+          which adb || echo "adb not found"
+
+      # ── 3. KEYSTORE ────────────────────────────────────────────────────────
       - name: Generate debug keystore
         run: |
           keytool -genkeypair -v \
@@ -33,6 +56,14 @@ jobs:
             -keypass android \
             -dname "CN=Android Debug,O=Android,C=US"
 
+      - name: Verify keystore
+        run: |
+          echo "=== Keystore file exists? ==="
+          ls -lh /tmp/debug.keystore
+          echo "=== Keystore contents ==="
+          keytool -list -keystore /tmp/debug.keystore -storepass android
+
+      # ── 4. GODOT BINARY ────────────────────────────────────────────────────
       - name: Download Godot
         run: |
           wget -q https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_linux.x86_64.zip
@@ -40,6 +71,14 @@ jobs:
           mv Godot_v4.2.2-stable_linux.x86_64 godot
           chmod +x godot
 
+      - name: Verify Godot binary
+        run: |
+          echo "=== Godot version ==="
+          ./godot --version
+          echo "=== Godot headless smoke test ==="
+          ./godot --headless --quit || true
+
+      # ── 5. EXPORT TEMPLATES ────────────────────────────────────────────────
       - name: Download Android export templates
         run: |
           mkdir -p ~/.local/share/godot/export_templates/4.2.2.stable
@@ -47,6 +86,14 @@ jobs:
           unzip -q Godot_v4.2.2-stable_export_templates.tpz
           mv templates/* ~/.local/share/godot/export_templates/4.2.2.stable/
 
+      - name: Verify export templates
+        run: |
+          echo "=== Export templates directory ==="
+          ls -lh ~/.local/share/godot/export_templates/4.2.2.stable/
+          echo "=== Android templates present? ==="
+          ls ~/.local/share/godot/export_templates/4.2.2.stable/ | grep -i android || echo "WARNING: No Android templates found!"
+
+      # ── 6. EDITOR SETTINGS ─────────────────────────────────────────────────
       - name: Configure Godot editor settings
         run: |
           mkdir -p ~/.config/godot
@@ -59,11 +106,43 @@ jobs:
           export/android/debug_keystore_pass = "android"
           EOF
 
+      - name: Verify editor settings
+        run: |
+          echo "=== Editor settings file ==="
+          cat ~/.config/godot/editor_settings-4.tres
+          echo "=== SDK path valid? ==="
+          ls $ANDROID_SDK_ROOT > /dev/null && echo "SDK path OK" || echo "ERROR: SDK path not accessible"
+          echo "=== Keystore path valid? ==="
+          ls /tmp/debug.keystore > /dev/null && echo "Keystore path OK" || echo "ERROR: Keystore not found at expected path"
+
+      # ── 7. PROJECT FILES ───────────────────────────────────────────────────
+      - name: Verify project files
+        run: |
+          echo "=== project.godot present? ==="
+          ls project.godot || echo "ERROR: project.godot not found — is this the repo root?"
+          echo "=== export_presets.cfg present? ==="
+          ls export_presets.cfg || echo "ERROR: export_presets.cfg not found!"
+          echo "=== export_presets.cfg contents ==="
+          cat export_presets.cfg
+          echo "=== Output directory ==="
+          mkdir -p build/android
+          ls -lh build/android
+
+      # ── 8. BUILD ───────────────────────────────────────────────────────────
       - name: Build APK
         run: |
           mkdir -p build/android
-          ./godot --headless --export-debug "Android" build/android/EndlessBeloved_debug.apk
+          ./godot --headless --export-debug "Android" build/android/EndlessBeloved_debug.apk 2>&1
+          echo "=== Exit code: $? ==="
 
+      - name: Verify APK was created
+        run: |
+          echo "=== build/android contents ==="
+          ls -lh build/android/
+          echo "=== APK file present? ==="
+          ls build/android/EndlessBeloved_debug.apk && echo "SUCCESS: APK found!" || echo "ERROR: APK was not created"
+
+      # ── 9. UPLOAD ──────────────────────────────────────────────────────────
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
