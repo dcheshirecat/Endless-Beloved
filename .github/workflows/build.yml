@@ -10,7 +10,7 @@ on:
 jobs:
   build-android:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
         run: |
           sdkmanager "build-tools;34.0.0" "platforms;android-34" "platform-tools"
 
-      - name: Download Godot 4.2
+      - name: Download Godot 4.2.2
         run: |
           wget -q https://github.com/godotengine/godot/releases/download/4.2.2-stable/Godot_v4.2.2-stable_linux.x86_64.zip
           unzip -q Godot_v4.2.2-stable_linux.x86_64.zip
@@ -44,45 +44,37 @@ jobs:
           unzip -q Godot_v4.2.2-stable_export_templates.tpz
           mv templates/* ~/.local/share/godot/export_templates/4.2.2.stable/
 
-      - name: Set up Godot Android keystore
+      - name: Generate debug keystore
         run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > /tmp/release.keystore || true
-          # Use debug keystore if no release keystore provided
-          keytool -genkey -v -keystore /tmp/debug.keystore \
-            -alias androiddebugkey -keyalg RSA -keysize 2048 \
-            -validity 10000 -storepass android -keypass android \
-            -dname "CN=Android Debug,O=Android,C=US" 2>/dev/null || true
+          keytool -genkey -v \
+            -keystore /tmp/debug.keystore \
+            -alias androiddebugkey \
+            -keyalg RSA -keysize 2048 \
+            -validity 10000 \
+            -storepass android \
+            -keypass android \
+            -dname "CN=Android Debug,O=Android,C=US"
 
-      - name: Configure Godot Android export
+      - name: Configure Godot editor settings
         run: |
           mkdir -p ~/.config/godot
           cat > ~/.config/godot/editor_settings-4.tres << 'EOF'
-          [gd_resource type="EditorSettings" format=3]
-          [resource]
-          export/android/android_sdk_path = "/usr/local/lib/android/sdk"
-          export/android/debug_keystore = "/tmp/debug.keystore"
-          export/android/debug_keystore_user = "androiddebugkey"
-          export/android/debug_keystore_pass = "android"
-          EOF
+[gd_resource type="EditorSettings" format=3]
+
+[resource]
+export/android/android_sdk_path = "/root/.android/sdk"
+export/android/debug_keystore = "/tmp/debug.keystore"
+export/android/debug_keystore_user = "androiddebugkey"
+export/android/debug_keystore_pass = "android"
+EOF
 
       - name: Build APK
         run: |
           mkdir -p build/android
-          godot --headless --export-debug "Android" build/android/EndlessBeloved_debug.apk 2>&1 || \
-          godot --headless --export "Android" build/android/EndlessBeloved_debug.apk 2>&1
+          godot --headless --export-debug "Android" build/android/EndlessBeloved_debug.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: EndlessBeloved-APK
-          path: build/android/*.apk
-          retention-days: 30
-
-      - name: Upload build logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-logs
-          path: |
-            ~/.local/share/godot/logs/
-          retention-days: 7
+          name: EndlessBeloved-debug
+          path: build/android/EndlessBeloved_debug.apk
