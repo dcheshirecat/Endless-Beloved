@@ -58,15 +58,7 @@ jobs:
       - name: Configure Godot editor settings
         run: |
           mkdir -p ~/.config/godot
-          cat > ~/.config/godot/editor_settings-4.tres << 'EOF'
-[gd_resource type="EditorSettings" format=3]
-
-[resource]
-export/android/android_sdk_path = "/usr/local/lib/android/sdk"
-export/android/debug_keystore = "/tmp/debug.keystore"
-export/android/debug_keystore_user = "androiddebugkey"
-export/android/debug_keystore_pass = "android"
-EOF
+          printf '[gd_resource type="EditorSettings" format=3]\n\n[resource]\nexport/android/android_sdk_path = "/usr/local/lib/android/sdk"\nexport/android/debug_keystore = "/tmp/debug.keystore"\nexport/android/debug_keystore_user = "androiddebugkey"\nexport/android/debug_keystore_pass = "android"\n' > ~/.config/godot/editor_settings-4.tres
 
       - name: Verify Android configuration
         run: |
